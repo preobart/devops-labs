@@ -1,0 +1,10 @@
+FROM python:latest 
+
+WORKDIR /app
+
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+ADD source.file.tar.gz /app/source.file
+
+CMD ["python", "main.py"]
