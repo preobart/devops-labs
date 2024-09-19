@@ -1,0 +1,36 @@
+name: Badworkflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      continue-on-error: false
+    
+    - name: Set env
+      run: |
+            echo "SECRET_KEY=1234" >> $SECRET_KEY
+          
+    - name: Build Docker image
+      run: |
+        docker build -t myapp1 .
+
+    - name: Run npm install
+      run: |
+        docker run --rm my-app npm install
+
+    - name: Run tests
+      run: |
+        docker run --rm my-app npm test
+
+    - name: Deploy
+      run: scp -r dist/ user@server:/var/www/html/myapp1
+
+ 
