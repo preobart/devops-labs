@@ -1,36 +1,35 @@
-name: Badworkflow
+name: Bad Workflow
 
 on:
   push:
-    branches:
-      - main
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-      continue-on-error: false
-    
-    - name: Set env
-      run: |
-            echo "SECRET_KEY=1234" >> $SECRET_KEY
-          
-    - name: Build Docker image
-      run: |
-        docker build -t myapp1 .
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Run npm install
-      run: |
-        docker run --rm my-app npm install
+      - name: Set Python version
+        run: python3 -m venv .venv
+        continue-on-error: true
 
-    - name: Run tests
-      run: |
-        docker run --rm my-app npm test
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          npm install 
 
-    - name: Deploy
-      run: scp -r dist/ user@server:/var/www/html/myapp1
+      - name: Run tests
+        run: python -m unittest discover tests
+
+      - name: Deploy
+        run: |
+          scp -r dist/ user@server:/deploy_path  
+          echo "SECRET_KEY=1234" >> $GITHUB_ENV  
+
 
  

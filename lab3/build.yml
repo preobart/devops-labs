@@ -1,4 +1,4 @@
-name: Good Workflow
+name: build
 
 on:
   push:
@@ -14,10 +14,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
+
+      - name: Setup Doppler
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+        run: |
+          doppler setup --project devops_lab --config dev_personal
+          doppler secrets download --no-file --format env > .doppler.env
+          source .doppler.env
 
       - name: Install dependencies
         run: |
@@ -29,6 +37,8 @@ jobs:
 
       - name: Deploy
         run: |
-          rsync -avz --delete dist/ ${{ secrets.SSH_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.DEPLOY_PATH }}
+          rsync -avz --delete dist/ ${SSH_USER}@${SERVER_HOST}:${DEPLOY_PATH}
         env:
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          SECRET_KEY: ${{ env.SECRET_KEY }}
+
+
