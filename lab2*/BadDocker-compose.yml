@@ -1,12 +1,12 @@
 services:
   app:
-    image: python:latest
+    image: nginx:latest
     ports:
-      - "5000:5000" 
+      - "8080:80"
     environment:
-      - SECRET_KEY=1234
-    networks:
-      - host 
+      - DEBUG=true
+    volumes:
+      - ./app:/var/www/html
 
   db:
     image: postgres
